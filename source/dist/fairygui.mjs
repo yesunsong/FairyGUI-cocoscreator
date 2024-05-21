@@ -2486,7 +2486,7 @@ function registerFont(name, font, bundle) {
     if (font instanceof Font)
         _fontRegistry[name] = font;
     else {
-        (bundle || resources).load(name, Font, (err, asset) => {
+        (bundle || resources).load(font || name, Font, (err, asset) => {
             _fontRegistry[name] = asset;
         });
     }
@@ -7294,12 +7294,14 @@ class ScrollPane extends Component {
             this._bouncebackEffect = UIConfig.defaultScrollBounceEffect;
         if ((flags & 256) != 0)
             this._inertiaDisabled = true;
-        if ((flags & 512) == 0)
-            this._maskContainer.addComponent(Mask);
+        if ((flags & 512) != 0)
+            this._dontClip = true;
         if ((flags & 1024) != 0)
             this._floating = true;
         if ((flags & 2048) != 0)
             this._dontClipMargin = true;
+        if (!this._dontClip)
+            this._maskContainer.addComponent(Mask);
         if (scrollBarDisplay == ScrollBarDisplayType.Default)
             scrollBarDisplay = UIConfig.defaultScrollBarDisplay;
         if (scrollBarDisplay != ScrollBarDisplayType.Hidden) {
@@ -7384,7 +7386,18 @@ class ScrollPane extends Component {
             if (target)
                 return target;
         }
-        return this._owner;
+        if (this._dontClip)
+            return this._owner;
+        else if (this._dontClipMargin) {
+            if (pt.x >= 0 && pt.y >= 0 && pt.x < this._owner.width && pt.y < this._owner.height)
+                return this._owner;
+        }
+        else {
+            if (pt.x >= this._owner.margin.left && pt.y >= this._owner.margin.top
+                && pt.x < this._owner.margin.left + this._viewSize.x && pt.y < this._owner.margin.top + this._viewSize.y)
+                return this._owner;
+        }
+        return null;
     }
     get owner() {
         return this._owner;
