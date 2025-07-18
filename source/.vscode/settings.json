@@ -1,8 +1,15 @@
 {
-    "files.exclude":
-    {
-        "**/.DS_Store":true,
-        "**/.git":true,
-        "**/*.meta":true
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "**/*.meta": true,
+        "local/": true,
+        "**/build1": true,
+        "**/library": true,
+        "**/node_modules": true,
+        "**/temp": true
     }
 }
